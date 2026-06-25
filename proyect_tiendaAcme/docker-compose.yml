@@ -1,0 +1,22 @@
+services:
+  # Backend Recursos Humanos -> rrhh.tienda-acme.com
+  rrhh:
+    build: ./node_rrhh
+    container_name: module-rrhh      # nombre que usa nginx en proxy_pass
+    restart: unless-stopped
+    networks:
+      - tienda-acme-net
+
+  # Backend Ventas -> ventas.tienda-acme.com
+  ventas:
+    build: ./node_ventas
+    container_name: module-ventas    # nombre que usa nginx en proxy_pass
+    restart: unless-stopped
+    networks:
+      - tienda-acme-net
+
+# Red compartida: el contenedor de nginx (otro compose) debe unirse a esta
+# misma red para poder resolver "module-rrhh" y "module-ventas" por nombre.
+networks:
+  tienda-acme-net:
+    name: tienda-acme-net

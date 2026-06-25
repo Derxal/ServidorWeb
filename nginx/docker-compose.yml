@@ -1,0 +1,22 @@
+services:
+  # Reverse proxy / gateway HTTPS para tienda-acme.com
+  nginx:
+    image: nginx:alpine
+    container_name: gateway
+    ports:
+      - "80:80"      # HTTP  -> redirige a HTTPS
+      - "443:443"    # HTTPS
+    volumes:
+      # Solo el vhost de tienda-acme (rrhh y ventas)
+      - ./tienda-acme.conf:/etc/nginx/conf.d/tienda-acme.conf:ro
+      # Certificados ya generados (montados de solo lectura)
+      - ./certificados:/etc/nginx/certs:ro
+    restart: unless-stopped
+    networks:
+      - tienda-acme-net
+
+# Red del proyecto tienda-acme (la crea proyect_tiendaAcme).
+# external: true -> nginx solo se conecta a ella.
+networks:
+  tienda-acme-net:
+    external: true

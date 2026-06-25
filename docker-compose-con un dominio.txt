@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 1) Generador de certificados con mkcert (crea una CA local de confianza)
+  generador-ssl:
+    image: alpine/mkcert
+    container_name: mi_generador_mkcert
+    volumes:
+      - ./ssl/certificados:/certs      # aquí quedan los .pem y la rootCA
+    working_dir: /certs
+    environment:
+      - CAROOT=/certs                  # guarda la CA en el mismo volumen
+    command: ["tienda-acme.com", "*.tienda-acme.com", "localhost", "127.0.0.1", "web-service"]
+
+  # 2) Backend Recursos Humanos
+  rrhh:
+    build: ./node_rrhh
+    container_name: module-rrhh
+    restart: unless-stopped
+
+  # 3) Backend Marketing
+  marketing:
+    build: ./node_marketing
+    container_name: node-marketing
+    restart: unless-stopped
+
+  # 4) Reverse proxy nginx con HTTPS
+  nginx:
+    image: nginx:alpine
+    container_name: gateway
+    depends_on:
+      generador-ssl:
+        condition: service_completed_successfully   # espera a que existan los certs
+      rrhh:
+        condition: service_started
+      marketing:
+        condition: service_started
+    ports:
+      - "80:80"     # HTTP  -> redirige a HTTPS
+      - "443:443"   # HTTPS
+    volumes:
+      - ./nginx/tienda-acme.conf:/etc/nginx/conf.d/tienda-acme.conf:ro   # tienda-acme.com  -> marketing
+      - ./nginx/rrhh.conf:/etc/nginx/conf.d/rrhh.conf:ro                 # rrhh.tienda-acme.com -> rrhh
+      - ./ssl/certificados:/etc/nginx/certs:ro
+    restart: unless-stopped

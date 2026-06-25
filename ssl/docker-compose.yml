@@ -1,0 +1,24 @@
+services:
+  # === Dominio 1: tienda-acme.com (+ comodín y locales) ===
+  # 5 nombres -> tienda-acme.com+4.pem / tienda-acme.com+4-key.pem
+  ssl-tienda-acme:
+    image: alpine/mkcert
+    container_name: mkcert_tienda_acme
+    volumes:
+      - ./certificados:/certs        # rootCA compartida + carpetas por dominio
+    working_dir: /certs/tienda-acme  # el cert se genera dentro de esta carpeta
+    environment:
+      - CAROOT=/certs                 # la CA se guarda/lee desde el mismo volumen
+    command: ["tienda-acme.com", "*.tienda-acme.com", "localhost", "127.0.0.1", "web-service"]
+
+  # === Dominio 2: otra-empresa.com (+ comodín) ===
+  # 2 nombres -> otra-empresa.com+1.pem / otra-empresa.com+1-key.pem
+  ssl-otra-empresa:
+    image: alpine/mkcert
+    container_name: mkcert_otra_empresa
+    volumes:
+      - ./certificados:/certs
+    working_dir: /certs/otra-empresa
+    environment:
+      - CAROOT=/certs
+    command: ["otra-empresa.com", "*.otra-empresa.com"]
