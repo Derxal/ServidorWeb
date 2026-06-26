@@ -69,16 +69,11 @@ ipconfig /flushdns
 Los certificados se generan con **mkcert** dentro de contenedores Docker y quedan en `ssl/certificados/`.
 
 ```powershell
-cd ssl
-
-# Genera tienda-acme primero (crea la rootCA)
-docker compose run --rm ssl-tienda-acme
-
-# Genera nurcito (reutiliza la rootCA ya creada)
-docker compose run --rm ssl-nurcito
+cd ./ssl
+docker compose up
 ```
 
-> Los servicios corren de forma **secuencial** gracias a `depends_on`. Si prefieres correrlos en orden manual, usa los comandos de arriba uno a uno.
+> Los servicios corren de forma **secuencial** gracias a `depends_on`: primero `ssl-tienda-acme` (crea la rootCA), luego `ssl-nurcito` (la reutiliza).
 
 ### Resultado esperado
 
@@ -108,16 +103,28 @@ ssl/certificados/rootCA.pem    →  nginx/certificados/rootCA.pem
 
 ---
 
-## Paso 4 — Instalar la rootCA en el navegador
+## Paso 4 — Instalar la rootCA en el navegador *(opcional)*
 
-> Solo se hace una vez. Permite que Chrome/Edge muestren el candado verde sin avisos.
-> Requiere **PowerShell como Administrador**.
+> Sin este paso el sitio funciona igual, pero el navegador mostrará **"No seguro"**.
+> Instalando la rootCA una sola vez, Chrome y Edge mostrarán el candado verde para todos los dominios del stack.
+
+### Opción A — Interfaz gráfica de Windows (recomendada)
+
+1. Ve a la carpeta `nginx/certificados/`, renombra `rootCA.pem` → `rootCA.crt`.
+2. Doble clic sobre `rootCA.crt` y sigue el asistente:
+   - **Instalar certificado** → **Equipo local** → **Siguiente**
+   - **Colocar todos los certificados en el siguiente almacén** → **Examinar** → **Entidades de certificación raíz de confianza** → **Aceptar**
+   - **Siguiente** → **Finalizar** → **Sí** en el aviso de seguridad.
+
+### Opción B — PowerShell como Administrador
 
 ```powershell
-certutil -addstore -f "ROOT" "C:\Users\MerxDev\Desktop\nginx\nginx\certificados\rootCA.pem"
+certutil -addstore -f "ROOT" ".\nginx\certificados\rootCA.pem"
 ```
 
-Cierra y vuelve a abrir el navegador después de ejecutar este comando.
+---
+
+> Después de instalar por cualquiera de las dos opciones, **cierra completamente el navegador** (todas las ventanas) y vuelve a abrirlo para que tome efecto.
 
 ---
 
@@ -128,7 +135,7 @@ Cierra y vuelve a abrir el navegador después de ejecutar este comando.
 ### 5.1 — Proyecto tienda-acme
 
 ```powershell
-cd proyect_tiendaAcme
+cd ./proyect_tiendaAcme
 docker compose up -d --build
 ```
 
@@ -137,7 +144,7 @@ Levanta: `module-rrhh` y `module-ventas` en la red `tienda-acme-net`.
 ### 5.2 — Proyecto nurcito
 
 ```powershell
-cd proyect_nurcito
+cd ./proyect_nurcito
 docker compose up -d --build
 ```
 
@@ -146,7 +153,7 @@ Levanta: `module-nurcito` en la red `nurcito-net`.
 ### 5.3 — Gateway nginx (ÚLTIMO)
 
 ```powershell
-cd nginx
+cd ./nginx
 docker compose up -d
 ```
 
@@ -175,6 +182,7 @@ module-nurcito    Up            nurcito-net
 ## Comandos útiles
 
 ### Ver logs de un contenedor
+
 ```powershell
 docker logs gateway
 docker logs module-rrhh
@@ -183,21 +191,24 @@ docker logs module-nurcito
 ```
 
 ### Reiniciar el gateway (después de cambiar un .conf)
+
 ```powershell
-cd nginx
+cd ./nginx
 docker compose restart
 ```
 
 ### Reconstruir un proyecto tras cambios en el código
+
 ```powershell
-cd proyect_tiendaAcme
+cd ./proyect_tiendaAcme
 docker compose up -d --build
 
-cd proyect_nurcito
+cd ./proyect_nurcito
 docker compose up -d --build
 ```
 
 ### Apagar todo
+
 ```powershell
 # Desde cada carpeta de proyecto:
 docker compose down
@@ -207,29 +218,14 @@ docker stop gateway module-rrhh module-ventas module-nurcito
 ```
 
 ### Regenerar certificados (si expiran o necesitas recrearlos)
+
 ```powershell
-cd ssl
+cd ./ssl
 
 # Eliminar los certs anteriores (la rootCA puede quedarse)
 Remove-Item -Recurse -Force .\certificados\tienda-acme, .\certificados\nurcito -ErrorAction SilentlyContinue
 
-# Regenerar
-docker compose run --rm ssl-tienda-acme
-docker compose run --rm ssl-nurcito
+# Regenerar ambos en secuencia
+docker compose up
 ```
 
----
-
-## Solución de problemas frecuentes
-
-### `network tienda-acme-net not found`
-El gateway intentó arrancar antes que los proyectos. Levanta primero `proyect_tiendaAcme` y luego `nginx`.
-
-### `cannot load certificate ... No such file or directory`
-Los certificados no están en `nginx/certificados/`. Revisa el **Paso 3**.
-
-### El navegador sigue mostrando "No seguro"
-La rootCA no está instalada en Windows o el navegador no se reinició después de instalarla. Revisa el **Paso 4** y cierra todas las ventanas del navegador.
-
-### `host not found in upstream`
-El contenedor del backend no está corriendo o no está en la misma red que el gateway. Verifica con `docker ps`.
