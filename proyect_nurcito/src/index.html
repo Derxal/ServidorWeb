@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nurcito</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <div class="logo">
+        <div class="logo-icon">N</div>
+        <span>NURCITO</span>
+      </div>
+      <nav>
+        <a href="#inicio">Inicio</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#programas">Programas</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <button class="btn-nav" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Contáctanos</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <p class="hero-tag">Bienvenido a Nurcito</p>
+      <h1>Formando líderes<br /><span>del mañana</span></h1>
+      <p class="hero-desc">Descubre programas de excelencia académica diseñados para transformar tu futuro profesional.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('programas').scrollIntoView({behavior:'smooth'})">Ver programas</button>
+        <button class="btn-outline" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'})">Conoce más</button>
+      </div>
+    </div>
+    <div class="hero-img">
+      <div class="hero-card">
+        <div class="stat">
+          <strong>+5,000</strong>
+          <span>Estudiantes</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <strong>20+</strong>
+          <span>Programas</span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat">
+          <strong>15</strong>
+          <span>Años</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="section" id="servicios">
+    <div class="section-inner">
+      <h2>Nuestros <span>Servicios</span></h2>
+      <p class="section-sub">Ofrecemos una amplia gama de servicios académicos y de apoyo estudiantil.</p>
+      <div class="cards-grid">
+        <div class="feature-card">
+          <div class="icon">🎓</div>
+          <h3>Educación de calidad</h3>
+          <p>Docentes altamente calificados con experiencia nacional e internacional.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🌐</div>
+          <h3>Modalidad virtual</h3>
+          <p>Estudia desde cualquier lugar del mundo con nuestra plataforma en línea.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📜</div>
+          <h3>Certificaciones</h3>
+          <p>Títulos reconocidos y certificaciones internacionales para tu carrera.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMAS -->
+  <section class="section section-alt" id="programas">
+    <div class="section-inner">
+      <h2>Programas <span>Académicos</span></h2>
+      <p class="section-sub">Elige el camino que mejor se adapte a tus metas.</p>
+      <div class="cards-grid">
+        <div class="program-card">
+          <span class="tag">Pregrado</span>
+          <h3>Ingeniería de Sistemas</h3>
+          <p>5 años · Presencial</p>
+        </div>
+        <div class="program-card">
+          <span class="tag">Postgrado</span>
+          <h3>MBA Gestión Corporativa</h3>
+          <p>2 años · Semipresencial</p>
+        </div>
+        <div class="program-card">
+          <span class="tag">Idiomas</span>
+          <h3>Inglés Ejecutivo</h3>
+          <p>6 meses · Virtual</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="section" id="contacto">
+    <div class="section-inner contact-box">
+      <h2>¿Listo para <span>empezar</span>?</h2>
+      <p class="section-sub">Contáctanos y un asesor te guiará en el proceso de inscripción.</p>
+      <button class="btn-primary btn-lg">Solicitar información</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© 2026 Nurcito · Todos los derechos reservados</span>
+      <span id="reloj"></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

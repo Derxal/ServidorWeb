@@ -1,0 +1,14 @@
+services:
+  # Sitio estático nurcito (HTML vanilla) -> nurcito.com
+  nurcito:
+    build: .
+    container_name: module-nurcito   # nombre que usará el gateway en proxy_pass
+    restart: unless-stopped
+    networks:
+      - nurcito-net
+
+# Red propia del proyecto nurcito (aislada del resto).
+# El gateway nginx debe unirse a esta red para alcanzarlo.
+networks:
+  nurcito-net:
+    name: nurcito-net
