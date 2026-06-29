@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login — Auth Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1f3c 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,.4);
+        }
+        .shield-icon {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #4f6ef7, #6c8cff);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #fff;
+            margin: 0 auto 20px;
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #4f6ef7, #6c8cff);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            letter-spacing: .03em;
+        }
+        .btn-login:hover { opacity: .9; transform: translateY(-1px); }
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+        }
+        .form-control:focus {
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108,140,255,.15);
+        }
+        .form-label { font-weight: 600; font-size: .9rem; color: #374151; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="text-center mb-4">
+        <div class="shield-icon">
+            <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <h4 class="fw-bold mb-1">ProyectAuth</h4>
+        <p class="text-muted small mb-0">Panel de Administración</p>
+    </div>
+
+    <div th:if="${param.error}" class="alert alert-danger d-flex align-items-center gap-2 py-2 mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>Credenciales incorrectas. Verifica tu usuario y contraseña.</span>
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success d-flex align-items-center gap-2 py-2 mb-3" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>Sesión cerrada correctamente.</span>
+    </div>
+
+    <form method="post" th:action="@{/admin/login}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Usuario</label>
+            <input type="text" id="username" name="username"
+                   class="form-control" placeholder="admin"
+                   required autofocus>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" id="password" name="password"
+                   class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-login btn-primary w-100 text-white">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
+        </button>
+    </form>
+
+    <p class="text-center text-muted small mt-4 mb-0">
+        Solo usuarios con rol <strong>ADMIN</strong> pueden acceder
+    </p>
+</div>
+</body>
+</html>

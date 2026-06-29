@@ -15,8 +15,54 @@ services:
     networks:
       - tienda-acme-net
 
+  # Base de datos para el servicio auth
+  auth-db:
+    image: mysql:8.4
+    container_name: auth-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tiendaacme_auth
+    volumes:
+      - auth-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tienda-acme-net
+
+  # Frontend React -> app.tienda-acme.com
+  frontend:
+    build: ./frontend
+    container_name: module-frontend
+    restart: unless-stopped
+    networks:
+      - tienda-acme-net
+
+  # Backend Auth -> auth.tienda-acme.com
+  auth:
+    build: ./auth
+    container_name: module-auth
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://auth-db:3306/tiendaacme_auth?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_LIQUIBASE_ENABLED: "true"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - tienda-acme-net
+
 # Red compartida: el contenedor de nginx (otro compose) debe unirse a esta
-# misma red para poder resolver "module-rrhh" y "module-ventas" por nombre.
+# misma red para poder resolver los módulos por nombre.
 networks:
   tienda-acme-net:
     name: tienda-acme-net
+
+volumes:
+  auth-db-data:

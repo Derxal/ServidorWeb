@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/layout :: head('Sesiones — Auth Admin')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar('sessions')}"></div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h5 class="mb-0 fw-semibold">Sesiones Activas</h5>
+            <small class="text-muted" th:text="${#lists.size(sessions) + ' sesiones vigentes'}">0 sesiones</small>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <!-- Alert -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible d-flex align-items-center gap-2 fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Info card -->
+        <div class="alert alert-info d-flex align-items-start gap-2 mb-4" role="alert">
+            <i class="bi bi-info-circle-fill mt-1"></i>
+            <div>
+                <strong>¿Qué son las sesiones?</strong><br>
+                <small>Son los <em>refresh tokens</em> activos. Cada login genera uno. Revocarlos obliga al usuario a volver a iniciar sesión.</small>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Usuario</th>
+                                <th>Token (preview)</th>
+                                <th>Expira</th>
+                                <th class="text-end pe-4">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="session : ${sessions}">
+                                <td class="ps-4 text-muted small" th:text="${session.id}">1</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-circle text-secondary" style="font-size:1.3rem"></i>
+                                        <span class="small fw-semibold" th:text="${session.userEmail}">email</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="small text-secondary" th:text="${session.tokenPreview}">abc...xyz</code>
+                                </td>
+                                <td>
+                                    <span class="small text-muted"
+                                          th:text="${#temporals.format(session.expiryDate, 'dd/MM/yyyy HH:mm')}">fecha</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form th:action="@{/admin/sessions/{id}/revoke(id=${session.id})}" method="post"
+                                          onsubmit="return confirm('¿Revocar esta sesión?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                            <i class="bi bi-slash-circle me-1"></i>Revocar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(sessions)}">
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="bi bi-key d-block mb-2" style="font-size:2rem"></i>
+                                    No hay sesiones activas
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
